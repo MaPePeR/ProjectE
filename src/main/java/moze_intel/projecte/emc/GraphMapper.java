@@ -1,6 +1,9 @@
 package moze_intel.projecte.emc;
 
 
+import moze_intel.projecte.utils.PELogger;
+import scala.Int;
+
 import java.util.*;
 
 public class GraphMapper<T> {
@@ -41,10 +44,17 @@ public class GraphMapper<T> {
         addConversionMultiple(outnumber, output, ingredientsWithAmount, 0.0);
     }
     public void addConversionMultiple(int outnumber, T output, Map<T, Integer> ingredientsWithAmount, double baseValueForConversion) {
+        if (outnumber <= 0) throw new IllegalArgumentException("Outnumber has to be > 0");
         //Add the Conversions to the conversionsFor and usedIn Maps:
         Conversion<T> conversion = new Conversion<T>(output, outnumber,ingredientsWithAmount);
         conversion.value = baseValueForConversion;
         getConversionsFor(output).add(conversion);
+        for (T ingredient: ingredientsWithAmount.keySet()) {
+            if (ingredientsWithAmount.get(ingredient) <= 0) {
+                PELogger.logWarn("ingredient with amount <= 0");
+                ingredientsWithAmount.remove(ingredient);
+            }
+        }
         if (ingredientsWithAmount.size() == 0) increaseNoDependencyConversionCountFor(output);
 
         for (Map.Entry<T,Integer> ingredient:ingredientsWithAmount.entrySet()) {
@@ -128,14 +138,14 @@ public class GraphMapper<T> {
 
             for (Map.Entry<T,Double> solvableThing: solvableThings.entrySet()) {
                 if (valueFor.containsKey(solvableThing.getKey())) continue;
+                valueFor.put(solvableThing.getKey(), Math.floor(solvableThing.getValue()));
                 if (solvableThing.getValue() > 0) {
-                    valueFor.put(solvableThing.getKey(), solvableThing.getValue());
                     //Solvable Thing has a Value. Set it in all Conversions
                     for (Conversion<T> use: getUsesFor(solvableThing.getKey())) {
                         assert use.ingredientsWithAmount != null;
                         Integer amount = use.ingredientsWithAmount.get(solvableThing.getKey());
                         assert amount != null && amount > 0;
-                        use.value += amount * solvableThing.getValue();
+                        use.value += amount * Math.floor(solvableThing.getValue());
                         use.ingredientsWithAmount.remove(solvableThing.getKey());
                         if (use.ingredientsWithAmount.size() == 0) {
                             increaseNoDependencyConversionCountFor(use.output);
@@ -162,13 +172,44 @@ public class GraphMapper<T> {
             valueFor.put(fixedValueAfterInherit.getKey(),fixedValueAfterInherit.getValue());
         }
 
-        for (Map.Entry<T,List<Conversion<T>>> entry: conversionsFor.entrySet()) {
-            if (valueFor.containsKey(entry.getKey())) continue;
-            System.out.println("No conversion for " + entry.getKey() + " with " + getNoDependencyConversionCountFor(entry.getKey()) + "/" + entry.getValue().size() + " conversions solved.");
-        }
-        for (Map.Entry<T,List<Conversion<T>>> entry: usedIn.entrySet()) {
-            if (valueFor.containsKey(entry.getKey())) continue;
-            System.out.println("No conversion for " + entry.getKey() + " with " + getNoDependencyConversionCountFor(entry.getKey()) + "/" + getConversionsFor(entry.getKey()).size() + " conversions solved.");
+        Set<T> allThings = new HashSet<T>();
+        allThings.addAll(conversionsFor.keySet());
+        allThings.addAll(usedIn.keySet());
+
+        for (T something: allThings) {
+            if (valueFor.containsKey(something) && valueFor.get(something) > 0) continue;
+            int count = 0;
+            for (Conversion<T> conversion: getConversionsFor(something)) {
+                if (conversion.ingredientsWithAmount == null || conversion.ingredientsWithAmount.size() == 0) {
+                    count ++;
+                }
+            }
+            System.out.format("%2s %55s %5d %5d %5d %5d", (valueFor.containsKey(something) ? "=0" : "??"),something.toString(), getNoDependencyConversionCountFor(something),count, getConversionsFor(something).size(),getUsesFor(something).size());
+            if (count != getNoDependencyConversionCountFor(something)) {
+                System.out.format("!!!!!!!!!!");
+                for (Conversion<T> conversion: getConversionsFor(something)) {
+                    if (conversion.ingredientsWithAmount != null) {
+                        System.out.format("%5d", conversion.ingredientsWithAmount.size());
+                    } else {
+                        System.out.format("%5s", "-");
+                    }
+                }
+            }
+            if (something.toString().startsWith("appliedenergistics2:tile.BlockInscriber")) {
+                System.out.format("Conversions:\n");
+                for (Conversion<T> conversion: getConversionsFor(something)) {
+                    System.out.format("%f + \n", conversion.value);
+                    if (conversion.ingredientsWithAmount != null) {
+                        for (Map.Entry<T, Integer> ingredient: conversion.ingredientsWithAmount.entrySet()) {
+                            System.out.format("%d x %s, ", ingredient.getValue(), ingredient.getKey().toString());
+                        }
+                        System.out.format("\n");
+                    } else {
+                        System.out.format("X\n");
+                    }
+                }
+            }
+            System.out.format("\n");
         }
         System.out.println("GraphMapper has " + valueFor.size() + " Mappings");
         return valueFor;
