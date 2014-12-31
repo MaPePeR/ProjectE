@@ -89,7 +89,7 @@ public final class EMCMapper
         } else if (index == objects.size()) {
             RecipeInput recipeInput = new RecipeInput();
             for(SimpleStack is: currentIngredients) {
-                recipeInput.addToInputs(is.toItemStack());
+                recipeInput.addToInputs(is.normalized().toItemStack());
             }
             out.add(recipeInput);
         }
@@ -111,6 +111,7 @@ public final class EMCMapper
                     for (RecipeInput recipeInput: entry.getValue()) {
                         Map<SimpleStack, Integer> ingredients = new HashMap<SimpleStack, Integer>();
                         for (RecipeInput r: recursiveRecipeInput(recipeInput)) {
+                            ingredients.clear();
                             for (Object o: r) {
                                 if (o instanceof SimpleStack) {
                                     SimpleStack stack = (SimpleStack) o;
@@ -122,8 +123,8 @@ public final class EMCMapper
                                     throw new RuntimeException("This should not happen anymore..." + o.toString());
                                 }
                             }
+                            graphMapper.addConversionMultiple(key.qnty, key.normalized(), ingredients);
                         }
-                        graphMapper.addConversionMultiple(key.qnty, key.normalized(), ingredients);
                     }
 
                     if (mapContains(key) || blacklistContains(key))
