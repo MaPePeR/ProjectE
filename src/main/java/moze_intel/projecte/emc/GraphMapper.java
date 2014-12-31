@@ -128,8 +128,8 @@ public class GraphMapper<T> {
 
             for (Map.Entry<T,Double> solvableThing: solvableThings.entrySet()) {
                 if (valueFor.containsKey(solvableThing.getKey())) continue;
-                valueFor.put(solvableThing.getKey(), solvableThing.getValue());
                 if (solvableThing.getValue() > 0) {
+                    valueFor.put(solvableThing.getKey(), solvableThing.getValue());
                     //Solvable Thing has a Value. Set it in all Conversions
                     for (Conversion<T> use: getUsesFor(solvableThing.getKey())) {
                         assert use.ingredientsWithAmount != null;
@@ -161,6 +161,16 @@ public class GraphMapper<T> {
         for (Map.Entry<T,Double> fixedValueAfterInherit: fixValueAfterInherit.entrySet()) {
             valueFor.put(fixedValueAfterInherit.getKey(),fixedValueAfterInherit.getValue());
         }
+
+        for (Map.Entry<T,List<Conversion<T>>> entry: conversionsFor.entrySet()) {
+            if (valueFor.containsKey(entry.getKey())) continue;
+            System.out.println("No conversion for " + entry.getKey() + " with " + getNoDependencyConversionCountFor(entry.getKey()) + "/" + entry.getValue().size() + " conversions solved.");
+        }
+        for (Map.Entry<T,List<Conversion<T>>> entry: usedIn.entrySet()) {
+            if (valueFor.containsKey(entry.getKey())) continue;
+            System.out.println("No conversion for " + entry.getKey() + " with " + getNoDependencyConversionCountFor(entry.getKey()) + "/" + getConversionsFor(entry.getKey()).size() + " conversions solved.");
+        }
+        System.out.println("GraphMapper has " + valueFor.size() + " Mappings");
         return valueFor;
     }
 

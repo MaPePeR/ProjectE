@@ -2,6 +2,7 @@ package moze_intel.projecte.emc;
 
 import appeng.api.networking.security.MachineSource;
 import moze_intel.projecte.playerData.Transmutation;
+import moze_intel.projecte.utils.PELogger;
 import moze_intel.projecte.utils.Utils;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -47,9 +48,11 @@ public final class EMCMapper
             right.put(entry.getKey(),(int)(double)entry.getValue());
         for (SimpleStack stack: allItems) {
             int leftValue = left.containsKey(stack) ? left.get(stack) : 0;
+            char leftChar = left.containsKey(stack) ? '!' : ' ';
             int rightValue = right.containsKey(stack) ? right.get(stack) : 0;;
+            char rightChar = right.containsKey(stack) ? '!' : ' ';
             if (leftValue != rightValue) {
-                System.out.format("%50s %10d != %10d\n", stack.toString(),leftValue, rightValue);
+                System.out.format("%50s: %c%10d != %10d%c\n", stack.toString(),leftChar,leftValue, rightValue,rightChar);
             }
         }
 		Transmutation.loadCompleteKnowledge();
@@ -71,11 +74,16 @@ public final class EMCMapper
                 currentIngredients.push((SimpleStack)next);
                 recursiveRecipeInput(objects, index + 1, out, currentIngredients);
                 currentIngredients.pop();
-            } else if (next instanceof ArrayList) {
-                for (SimpleStack is : (ArrayList<SimpleStack>)next) {
-                    currentIngredients.push(is);
-                    recursiveRecipeInput(objects, index + 1, out, currentIngredients);
-                    currentIngredients.pop();
+            } else if (next instanceof Iterable) {
+                for (Object o : (Iterable<Object>)next) {
+                    if (o instanceof SimpleStack) {
+                        currentIngredients.push((SimpleStack)o);
+                        recursiveRecipeInput(objects, index + 1, out, currentIngredients);
+                        currentIngredients.pop();
+                    }
+                    else {
+                        PELogger.logFatal("Expected SImpleStack, found" + o.toString());
+                    }
                 }
             }
         } else if (index == objects.size()) {
@@ -102,21 +110,20 @@ public final class EMCMapper
                     SimpleStack key = entry.getKey();
                     for (RecipeInput recipeInput: entry.getValue()) {
                         Map<SimpleStack, Integer> ingredients = new HashMap<SimpleStack, Integer>();
-                        for (Object o: recursiveRecipeInput(recipeInput)) {
-                            if (o instanceof SimpleStack) {
-                                SimpleStack stack = (SimpleStack)o;
-                                SimpleStack stackNorm = stack.normalized();
-                                int qnty = 0;
-                                if (ingredients.containsKey(stackNorm)) qnty = ingredients.get(stackNorm);
-                                ingredients.put(stackNorm, qnty + stack.qnty);
-                            } else {
-                                assert false;
-                                ingredients = null;
-                                break;
+                        for (RecipeInput r: recursiveRecipeInput(recipeInput)) {
+                            for (Object o: r) {
+                                if (o instanceof SimpleStack) {
+                                    SimpleStack stack = (SimpleStack) o;
+                                    SimpleStack stackNorm = stack.normalized();
+                                    int qnty = 0;
+                                    if (ingredients.containsKey(stackNorm)) qnty = ingredients.get(stackNorm);
+                                    ingredients.put(stackNorm, qnty + stack.qnty);
+                                } else {
+                                    throw new RuntimeException("This should not happen anymore..." + o.toString());
+                                }
                             }
                         }
-                        if (ingredients != null)
-                            graphMapper.addConversionMultiple(key.qnty, key.normalized(), ingredients);
+                        graphMapper.addConversionMultiple(key.qnty, key.normalized(), ingredients);
                     }
 
                     if (mapContains(key) || blacklistContains(key))
