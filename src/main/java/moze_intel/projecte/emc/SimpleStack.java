@@ -94,4 +94,10 @@ public class SimpleStack
 		
 		return "id:" + id + " damage:" + damage + " qnty:" + qnty;
 	}
+
+	public SimpleStack normalized() {
+		SimpleStack copy = this.copy();
+		copy.qnty = 1;
+		return copy;
+	}
 }

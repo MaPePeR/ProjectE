@@ -1,5 +1,6 @@
 package moze_intel.projecte.emc;
 
+import appeng.api.networking.security.MachineSource;
 import moze_intel.projecte.playerData.Transmutation;
 import moze_intel.projecte.utils.Utils;
 import net.minecraft.init.Blocks;
@@ -8,11 +9,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraftforge.oredict.OreDictionary;
+import scala.Int;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.Map.Entry;
 
 public final class EMCMapper 
@@ -21,11 +20,15 @@ public final class EMCMapper
 	public static LinkedHashMap<SimpleStack, Integer> IMCregistrations = new LinkedHashMap<SimpleStack, Integer>();
 	public static LinkedList<SimpleStack> blackList = new LinkedList<SimpleStack>();
 
+    public static GraphMapper<SimpleStack> graphMapper = new GraphMapper<SimpleStack>();
 	public static void map()
 	{
+        enableGraphMapperMapping=true;
 		loadEmcFromIMC();
 		lazyInit();
 		loadEmcFromOD();
+        enableGraphMapperMapping=false;
+
         mapFromSmelting();
 
 		mapFromRecipes(2);
@@ -35,9 +38,54 @@ public final class EMCMapper
 		
         assertMinEmcValues();
 
+        Map<SimpleStack,Double> graphMapperValues = graphMapper.generateValues();
+        Set<SimpleStack> allItems = new HashSet<SimpleStack>(emc.keySet());
+        allItems.addAll(graphMapperValues.keySet());
+        Map<SimpleStack,Integer> left = emc;
+        Map<SimpleStack,Integer> right = new HashMap<SimpleStack, Integer>();
+        for (Entry<SimpleStack,Double> entry: graphMapperValues.entrySet())
+            right.put(entry.getKey(),(int)(double)entry.getValue());
+        for (SimpleStack stack: allItems) {
+            int leftValue = left.containsKey(stack) ? left.get(stack) : 0;
+            int rightValue = right.containsKey(stack) ? right.get(stack) : 0;;
+            if (leftValue != rightValue) {
+                System.out.format("%50s %10d != %10d\n", stack.toString(),leftValue, rightValue);
+            }
+        }
 		Transmutation.loadCompleteKnowledge();
 		FuelMapper.loadMap();
 	}
+
+    public static List<RecipeInput> recursiveRecipeInput(RecipeInput recipeInput) {
+        List<RecipeInput> out = new ArrayList<RecipeInput>();
+        List<Object> bla = new LinkedList<Object>();
+        for(Iterator<Object> iterator = recipeInput.iterator(); iterator.hasNext();)
+            bla.add(iterator.next());
+        recursiveRecipeInput(bla,0,out,new Stack<SimpleStack>());
+        return out;
+    }
+    public static void recursiveRecipeInput(List<Object> objects, int index, List<RecipeInput> out, Stack<SimpleStack> currentIngredients) {
+        if (index < objects.size()) {
+            Object next = objects.get(index);
+            if (next instanceof SimpleStack) {
+                currentIngredients.push((SimpleStack)next);
+                recursiveRecipeInput(objects, index + 1, out, currentIngredients);
+                currentIngredients.pop();
+            } else if (next instanceof ArrayList) {
+                for (SimpleStack is : (ArrayList<SimpleStack>)next) {
+                    currentIngredients.push(is);
+                    recursiveRecipeInput(objects, index + 1, out, currentIngredients);
+                    currentIngredients.pop();
+                }
+            }
+        } else if (index == objects.size()) {
+            RecipeInput recipeInput = new RecipeInput();
+            for(SimpleStack is: currentIngredients) {
+                recipeInput.addToInputs(is.toItemStack());
+            }
+            out.add(recipeInput);
+        }
+    }
 
     private static void mapFromRecipes(int numRuns)
     {
@@ -52,6 +100,24 @@ public final class EMCMapper
                 for (Entry<SimpleStack, LinkedList<RecipeInput>> entry : RecipeMapper.getEntrySet())
                 {
                     SimpleStack key = entry.getKey();
+                    for (RecipeInput recipeInput: entry.getValue()) {
+                        Map<SimpleStack, Integer> ingredients = new HashMap<SimpleStack, Integer>();
+                        for (Object o: recursiveRecipeInput(recipeInput)) {
+                            if (o instanceof SimpleStack) {
+                                SimpleStack stack = (SimpleStack)o;
+                                SimpleStack stackNorm = stack.normalized();
+                                int qnty = 0;
+                                if (ingredients.containsKey(stackNorm)) qnty = ingredients.get(stackNorm);
+                                ingredients.put(stackNorm, qnty + stack.qnty);
+                            } else {
+                                assert false;
+                                ingredients = null;
+                                break;
+                            }
+                        }
+                        if (ingredients != null)
+                            graphMapper.addConversionMultiple(key.qnty, key.normalized(), ingredients);
+                    }
 
                     if (mapContains(key) || blacklistContains(key))
                     {
@@ -236,6 +302,10 @@ public final class EMCMapper
                 {
                     continue;
                 }
+
+                Map<SimpleStack,Integer> m = new HashMap<SimpleStack, Integer>();
+                m.put(input.normalized(),input.qnty);
+                graphMapper.addConversionMultiple(result.qnty, result.normalized(), m);
 			
 				if (mapContains(input) && !mapContains(result))
 				{
@@ -368,12 +438,16 @@ public final class EMCMapper
 		
 		return false;
 	}
-	
+
+    private static boolean enableGraphMapperMapping = false;
 	private static void addMapping(SimpleStack stack, int value)
 	{
         SimpleStack copy = stack.copy();
         copy.qnty = 1;
 
+        if (enableGraphMapperMapping) {
+            graphMapper.setValue(copy, value, GraphMapper.FixedValue.FixAndInherit);
+        }
 		if (emc.containsKey(copy) || blackList.contains(copy))
 		{
 			return;

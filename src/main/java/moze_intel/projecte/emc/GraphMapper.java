@@ -3,7 +3,7 @@ package moze_intel.projecte.emc;
 
 import java.util.*;
 
-public class GraphMapper<T extends Comparable<T>> {
+public class GraphMapper<T> {
     protected Map<T,List<Conversion<T>>> conversionsFor = new HashMap<T, List<Conversion<T>>>();
     protected Map<T,List<Conversion<T>>> usedIn = new HashMap<T,List<Conversion<T>>>();
     protected Map<T,Double> fixValueBeforeInherit = new HashMap<T, Double>();
