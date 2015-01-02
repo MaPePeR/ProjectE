@@ -4,11 +4,13 @@ import moze_intel.projecte.utils.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -34,9 +36,13 @@ public final class FluidMapper
 			{
 				continue;
 			}
+			if (fluid.getBlock() == FluidRegistry.WATER.getBlock()) {
+				EMCMapper.graphMapper.addConversion(1, new SimpleStack(data.filledContainer), Arrays.asList(new SimpleStack(data.emptyContainer)));
+			}
 
 			if (MAP.containsKey(fluid))
 			{
+				EMCMapper.graphMapper.addConversion(1, new SimpleStack(data.filledContainer), Arrays.asList(new SimpleStack(data.filledContainer), new SimpleStack(new ItemStack(Item.getItemFromBlock(fluid.getBlock())))));
 				EMCMapper.addMapping(data.filledContainer, Utils.getEmcValue(data.emptyContainer) + MAP.get(fluid));
 				continue;
 			}
@@ -98,6 +104,8 @@ public final class FluidMapper
 	{
 		MAP.put(FluidRegistry.WATER, 0);
 		MAP.put(FluidRegistry.LAVA, 64);
+		EMCMapper.graphMapper.setValue(new SimpleStack(new ItemStack(Item.getItemFromBlock(FluidRegistry.LAVA.getBlock()))), 64, GraphMapper.FixedValue.FixAndInherit);
+		EMCMapper.graphMapper.setValue(new SimpleStack(new ItemStack(Item.getItemFromBlock(FluidRegistry.WATER.getBlock()))), 0, GraphMapper.FixedValue.FixAndInherit);
 
 		addManualRegistration("milk", 16);
 
@@ -123,6 +131,7 @@ public final class FluidMapper
 
 		if (fluid != null)
 		{
+			EMCMapper.graphMapper.setValue(new SimpleStack(new ItemStack(Item.getItemFromBlock(fluid.getBlock()))), emcValue, GraphMapper.FixedValue.FixAndInherit);
 			addFluidEMC(fluid, emcValue);
 		}
 	}

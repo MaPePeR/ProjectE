@@ -119,7 +119,15 @@ public final class EMCMapper
                                     SimpleStack stackNorm = stack.normalized();
                                     int qnty = 0;
                                     if (ingredients.containsKey(stackNorm)) qnty = ingredients.get(stackNorm);
-                                    ingredients.put(stackNorm, qnty + stack.qnty);
+									ingredients.put(stackNorm, qnty + stack.qnty);
+									if (stack.toItemStack().getItem().hasContainerItem(stack.toItemStack()))
+									{
+										SimpleStack container = new SimpleStack(stack.toItemStack().getItem().getContainerItem(stack.toItemStack()));
+										qnty = 0;
+										if (ingredients.containsKey(container)) qnty = ingredients.get(container);
+										ingredients.put(container, qnty - 1);
+									}
+
                                 } else {
                                     throw new RuntimeException("This should not happen anymore..." + o.toString());
                                 }
