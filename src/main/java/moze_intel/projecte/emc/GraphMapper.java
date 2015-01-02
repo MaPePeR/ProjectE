@@ -149,7 +149,7 @@ public class GraphMapper<T> {
                             assert use.ingredientsWithAmount != null;
                             Integer amount = use.ingredientsWithAmount.get(solvableThing.getKey());
                             assert amount != null && amount > 0;
-                            use.value += amount * solvableThing.getValue();
+                            use.value += amount * Math.floor(solvableThing.getValue());
                             use.ingredientsWithAmount.remove(solvableThing.getKey());
                             if (use.ingredientsWithAmount.size() == 0) {
                                 increaseNoDependencyConversionCountFor(use.output);
