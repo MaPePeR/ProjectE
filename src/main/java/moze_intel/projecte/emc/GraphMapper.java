@@ -148,7 +148,7 @@ public class GraphMapper<T> {
                         for (Conversion<T> use : getUsesFor(solvableThing.getKey())) {
                             assert use.ingredientsWithAmount != null;
                             Integer amount = use.ingredientsWithAmount.get(solvableThing.getKey());
-                            assert amount != null && amount > 0;
+                            assert amount != null && amount != 0;
                             use.value += amount * Math.floor(solvableThing.getValue());
                             use.ingredientsWithAmount.remove(solvableThing.getKey());
                             if (use.ingredientsWithAmount.size() == 0) {
