@@ -50,12 +50,6 @@ public class GraphMapper<T> {
         Conversion<T> conversion = new Conversion<T>(output, outnumber,ingredientsWithAmount);
         conversion.value = baseValueForConversion;
         getConversionsFor(output).add(conversion);
-        for (T ingredient: ingredientsWithAmount.keySet()) {
-            if (ingredientsWithAmount.get(ingredient) <= 0) {
-                PELogger.logWarn("ingredient with amount <= 0");
-                ingredientsWithAmount.remove(ingredient);
-            }
-        }
         if (ingredientsWithAmount.size() == 0) increaseNoDependencyConversionCountFor(output);
 
         for (Map.Entry<T,Integer> ingredient:ingredientsWithAmount.entrySet()) {
