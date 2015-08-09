@@ -31,6 +31,7 @@ import moze_intel.projecte.impl.IMCHandler;
 import moze_intel.projecte.network.PacketHandler;
 import moze_intel.projecte.network.ThreadCheckUUID;
 import moze_intel.projecte.network.ThreadCheckUpdate;
+import moze_intel.projecte.network.customSlotClick.ServerConnectionFromClientEventHandler;
 import moze_intel.projecte.network.commands.ProjectECMD;
 import moze_intel.projecte.playerData.IOHandler;
 import moze_intel.projecte.playerData.Transmutation;
@@ -92,6 +93,7 @@ public class PECore
 
 		FMLCommonHandler.instance().bus().register(new TickEvents());
 		FMLCommonHandler.instance().bus().register(new ConnectionHandler());
+		FMLCommonHandler.instance().bus().register(new ServerConnectionFromClientEventHandler());
 
 		proxy.registerClientOnlyEvents();
 
@@ -235,4 +237,6 @@ public class PECore
 			}
 		}
 	}
+
+
 }
