@@ -7,6 +7,7 @@ import moze_intel.projecte.gameObjs.container.slots.transmutation.SlotInput;
 import moze_intel.projecte.gameObjs.container.slots.transmutation.SlotLock;
 import moze_intel.projecte.gameObjs.container.slots.transmutation.SlotOutput;
 import moze_intel.projecte.gameObjs.container.slots.transmutation.SlotUnlearn;
+import moze_intel.projecte.network.customSlotClick.ICustomSlotClick;
 import moze_intel.projecte.utils.EMCHelper;
 import moze_intel.projecte.utils.ItemHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,7 +16,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class TransmutationContainer extends Container
+public class TransmutationContainer extends Container implements ICustomSlotClick
 {
 	public TransmutationInventory transmutationInventory;
 
@@ -149,6 +150,22 @@ public class TransmutationContainer extends Container
 
 		return super.slotClick(slot, button, flag, player);
 	}
+
+	@Override
+	public boolean isCustomSlotClickSlot(int slot, int button, int flag, EntityPlayer player)
+	{
+		//Only apply to TransmutationOutputSlots
+		return slot >= 10 && slot <= 25;
+	}
+
+	@Override
+	public ItemStack slotClick(int slot, int button, int flag, EntityPlayer player, ItemStack itemStackFromClient)
+	{
+		transmutationInventory.setInventorySlotContents(slot, itemStackFromClient);
+		ItemStack result = slotClick(slot, button, flag, player);
+		transmutationInventory.setInventorySlotContents(slot, null);
+		return result;
+	}
 	
 	@Override
 	public boolean canDragIntoSlot(Slot slot) 
@@ -156,4 +173,6 @@ public class TransmutationContainer extends Container
 		if (slot instanceof SlotConsume || slot instanceof SlotUnlearn || slot instanceof SlotInput || slot instanceof SlotLock||slot instanceof SlotOutput) return false;
 		return true;
 	}
+
+
 }

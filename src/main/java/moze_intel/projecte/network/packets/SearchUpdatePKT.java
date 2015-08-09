@@ -25,7 +25,7 @@ public class SearchUpdatePKT implements IMessage, IMessageHandler<SearchUpdatePK
 	{
 		if (ctx.getServerHandler().playerEntity.openContainer instanceof TransmutationContainer)
 		{
-			TransmutationContainer container = ((TransmutationContainer) ctx.getServerHandler().playerEntity.openContainer);
+			/*TransmutationContainer container = ((TransmutationContainer) ctx.getServerHandler().playerEntity.openContainer);
 
 			if (pkt.search != null)
 			{
@@ -38,7 +38,7 @@ public class SearchUpdatePKT implements IMessage, IMessageHandler<SearchUpdatePK
 
 			container.transmutationInventory.searchpage = pkt.searchpage;
 
-			container.transmutationInventory.updateOutputs();
+			container.transmutationInventory.updateOutputs();*/
 		}
 		
 		return null;
