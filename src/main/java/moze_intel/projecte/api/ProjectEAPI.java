@@ -46,7 +46,7 @@ public final class ProjectEAPI
 			try
 			{
 				Class<?> clazz = Class.forName("moze_intel.projecte.impl.RecipeProxyImpl");
-				emcProxy = (IEMCProxy) clazz.getField("instance").get(null);
+				recipeProxy = (IRecipeProxy) clazz.getField("instance").get(null);
 			} catch (ReflectiveOperationException ex)
 			{
 				FMLLog.warning("[ProjectEAPI] Error retrieving RecipeProxyImpl, ProjectE may be absent, damaged, or outdated.");
