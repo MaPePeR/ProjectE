@@ -56,7 +56,7 @@ public class RecipeProxyImpl implements IRecipeProxy
 			fakes.put(object, nss);
 			return nss;
 		} else {
-			throw new IllegalArgumentException("Can not turn object into NormalizedSimpleStack. need itemStack, FluidStack, String or 'Object'");
+			throw new IllegalArgumentException("Can not turn " + object + (object != null ? " (" + object.getClass().getName() + ")" : "") + " into NormalizedSimpleStack. need ItemStack, FluidStack, String or 'Object'");
 		}
 	}
 
