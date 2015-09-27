@@ -3,8 +3,13 @@ package moze_intel.projecte.api.proxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+
 import moze_intel.projecte.api.exception.NoCreationEmcValueException;
 import moze_intel.projecte.api.exception.NoDestructionEmcValueException;
+
+import java.util.Map;
 
 public interface IEMCProxy
 {
@@ -15,6 +20,21 @@ public interface IEMCProxy
      * @param value The value to define. Values below 0 are changed to 0
      */
     void registerCustomEMC(ItemStack stack, int value);
+
+    /**
+     * Register a custom EMC value for emc calculation that is used in Recipes.
+     * You can use the following things for the {@code o}-Parameter:
+     * <ul>
+     *     <li>{@link ItemStack} - The Modname:unlocalizedName and Metadata will be used to identify this ItemStack (May contain a {@code Block} or {@code Item})</li>
+     *     <li>{@link FluidStack} - {@link FluidStack#getFluid()} and {@link Fluid#getName()} will be used to identify this Fluid.</li>
+     *     <li>{@link String} - will be interpreted as an OreDictionary name.</li>
+     *     <li>{@link Object} - (No subclasses of {@code Object} - only {@code Object}!) can be used as a intermediate fake object for complex recipes.</li>
+     * </ul>
+     * @param o
+     * @param value
+     * @see IRecipeProxy#addRecipe(int, Object, Map)
+     */
+    void registerCustomEMC(Object o, int value);
 
     /**
      * @deprecated As of API version 8 use {@link #canBeCreatedWithEmc(ItemStack)} or {@link #canBeTurnedIntoEmc(ItemStack)} depending on your use case.

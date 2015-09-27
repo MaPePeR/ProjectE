@@ -41,7 +41,7 @@ public class RecipeProxyImpl implements IRecipeProxy
 
 	public Map<String, List<APIConversion>> storedConversions = Maps.newHashMap();
 
-	private NormalizedSimpleStack objectToNSS(Object object)
+	public NormalizedSimpleStack objectToNSS(Object object)
 	{
 		if (object instanceof ItemStack) {
 			return NormalizedSimpleStack.getFor((ItemStack) object);
