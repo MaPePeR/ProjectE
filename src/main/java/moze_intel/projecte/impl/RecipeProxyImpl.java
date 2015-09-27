@@ -11,6 +11,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import org.apache.commons.lang3.ClassUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -58,12 +59,7 @@ public class RecipeProxyImpl implements IRecipeProxy
 			fakes.put(object, nss);
 			return nss;
 		} else {
-			String className = object != null ? object.getClass().getCanonicalName() : "null";
-			if (className == null && object != null)
-			{
-				className = object.getClass().getName();
-			}
-			throw new IllegalArgumentException("Can not turn " + object + " (" + className + ") into NormalizedSimpleStack. need ItemStack, FluidStack, String or 'Object'");
+			throw new IllegalArgumentException("Can not turn " + object + " (" + ClassUtils.getPackageCanonicalName(object, "") + ") into NormalizedSimpleStack. need ItemStack, FluidStack, String or 'Object'");
 		}
 	}
 
