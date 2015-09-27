@@ -22,7 +22,7 @@ public interface IRecipeProxy
 	 * All {@code Object}s will be assumed to be a single instance. No stacksize will be used.
 	 *
 	 * Use the {@code amount} parameter to specify how many {@code output}s are created.
-	 * Use the key in the {@code ingredients}-Mao to specify how much of an ingredient is required.
+	 * Use the value in the {@code ingredients}-Map to specify how much of an ingredient is required.
 	 * (Use Millibuckets for Fluids)
 	 *
 	 * @param amount
