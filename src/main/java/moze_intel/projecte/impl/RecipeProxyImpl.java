@@ -1,6 +1,7 @@
 package moze_intel.projecte.impl;
 
 import moze_intel.projecte.api.proxy.IRecipeProxy;
+import moze_intel.projecte.emc.IngredientMap;
 import moze_intel.projecte.emc.NormalizedSimpleStack;
 
 import com.google.common.collect.ImmutableMap;
@@ -24,9 +25,10 @@ public class RecipeProxyImpl implements IRecipeProxy
 	@Override
 	public void addRecipe(int amount, Object output, Map<Object, Integer> ingredients) {
 		NormalizedSimpleStack nssOut = objectToNSS(output);
-		ImmutableMap.Builder<NormalizedSimpleStack, Integer> nssIngredients = ImmutableMap.builder();
+		IngredientMap<NormalizedSimpleStack> ingredientMap = new IngredientMap<NormalizedSimpleStack>();
 		for (Map.Entry<Object, Integer> entry: ingredients.entrySet()) {
-			nssIngredients.put(objectToNSS(entry.getKey()), entry.getValue());
+			NormalizedSimpleStack nss = objectToNSS(entry.getKey());
+			ingredientMap.addIngredient(nss, entry.getValue());
 		}
 		List<APIConversion> conversionsFromMod;
 		String modId = getActiveMod();
@@ -36,7 +38,7 @@ public class RecipeProxyImpl implements IRecipeProxy
 			conversionsFromMod = Lists.newLinkedList();
 			storedConversions.put(modId, conversionsFromMod);
 		}
-		conversionsFromMod.add(new APIConversion(amount, nssOut, nssIngredients.build()));
+		conversionsFromMod.add(new APIConversion(amount, nssOut, ImmutableMap.copyOf(ingredientMap.getMap())));
 	}
 
 	public Map<String, List<APIConversion>> storedConversions = Maps.newHashMap();
