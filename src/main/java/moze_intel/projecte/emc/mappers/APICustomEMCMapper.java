@@ -122,7 +122,7 @@ public class APICustomEMCMapper implements IEMCMapper<NormalizedSimpleStack, Int
 			priorityMap.put(null, config.getInt("modlessCustomEMCPriority", "", PRIORITY_DEFAULT_VALUE, PRIORITY_MIN_VALUE, PRIORITY_MAX_VALUE, "Priority for custom EMC values for which the ModId could not be determined. 0 to disable. Values: " + valueCount));
 		}
 
-		List<String> modIds = new ArrayList<String>(customEMCforMod.keySet());
+		List<String> modIds = new ArrayList<String>(modIdSet);
 		Collections.sort(modIds, new Comparator<String>()
 		{
 			@Override
@@ -179,7 +179,7 @@ public class APICustomEMCMapper implements IEMCMapper<NormalizedSimpleStack, Int
 			NormalizedSimpleStack.NSSItem item = (NormalizedSimpleStack.NSSItem)stack;
 			itemName = Item.itemRegistry.getNameForObject(Item.itemRegistry.getObjectById(item.id));
 		} else {
-			return false;
+			itemName = "IntermediateFakeItemsUsedInRecipes:";
 		}
 		String modForItem = itemName.substring(0, itemName.indexOf(':'));
 		String permission = config.getString(modForItem,"permissions."+modId,"both", String.format("Allow '%s' to set and or remove values for '%s'. Options: [both, set, remove, none]", modId, modForItem), new String[]{"both", "set", "remove", "none"});
