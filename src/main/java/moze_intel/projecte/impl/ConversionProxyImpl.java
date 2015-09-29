@@ -1,6 +1,6 @@
 package moze_intel.projecte.impl;
 
-import moze_intel.projecte.api.proxy.IRecipeProxy;
+import moze_intel.projecte.api.proxy.IConversionProxy;
 import moze_intel.projecte.emc.IngredientMap;
 import moze_intel.projecte.emc.NormalizedSimpleStack;
 
@@ -16,15 +16,15 @@ import org.apache.commons.lang3.ClassUtils;
 import java.util.List;
 import java.util.Map;
 
-public class RecipeProxyImpl implements IRecipeProxy
+public class ConversionProxyImpl implements IConversionProxy
 {
 
-	public static final RecipeProxyImpl instance = new RecipeProxyImpl();
+	public static final ConversionProxyImpl instance = new ConversionProxyImpl();
 
 	Map<Object, NormalizedSimpleStack> fakes = Maps.newHashMap();
 
 	@Override
-	public void addRecipe(int amount, Object output, Map<Object, Integer> ingredients) {
+	public void addConversion(int amount, Object output, Map<Object, Integer> ingredients) {
 		NormalizedSimpleStack nssOut = objectToNSS(output);
 		IngredientMap<NormalizedSimpleStack> ingredientMap = new IngredientMap<NormalizedSimpleStack>();
 		for (Map.Entry<Object, Integer> entry: ingredients.entrySet()) {

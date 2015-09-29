@@ -32,7 +32,7 @@ public interface IEMCProxy
      * </ul>
      * @param o
      * @param value
-     * @see IRecipeProxy#addRecipe(int, Object, Map)
+     * @see IConversionProxy#addConversion(int, Object, Map)
      */
     void registerCustomEMC(Object o, int value);
 

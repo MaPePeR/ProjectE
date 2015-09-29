@@ -6,10 +6,13 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Map;
 
-public interface IRecipeProxy
+public interface IConversionProxy
 {
 	/**
-	 * Add a Recipe to the EMC Calculation.
+	 * Add a Conversion to the EMC Calculation.
+	 *
+	 * Adding a Conversion allows ProjectE to calculate the EMC value for the output based on the specified ingredients.
+	 *
 	 * Has to be called after {@code FMLInitializationEvent} and before {@code FMLServerStartingEvent}.
 	 *
 	 * You can use the following things for the {@code output}-Parameter and the keys in the {@code ingredients} Map:
@@ -17,7 +20,7 @@ public interface IRecipeProxy
 	 *     <li>{@link ItemStack} - The ItemId and Metadata will be used to identify this ItemStack (May contain a {@code Block} or {@code Item})</li>
 	 *     <li>{@link FluidStack} - {@link FluidStack#getFluid()} and {@link Fluid#getName()} will be used to identify this Fluid.</li>
 	 *     <li>{@link String} - will be interpreted as an OreDictionary name.</li>
-	 *     <li>{@link Object} - (No subclasses of {@code Object} - only {@code Object}!) can be used as a intermediate fake object for complex recipes.</li>
+	 *     <li>{@link Object} - (No subclasses of {@code Object} - only {@code Object}!) can be used as a intermediate fake object for complex conversion.</li>
 	 * </ul>
 	 * All {@code Object}s will be assumed to be a single instance. No stacksize will be used.
 	 *
@@ -29,5 +32,5 @@ public interface IRecipeProxy
 	 * @param output
 	 * @param ingredients
 	 */
-	void addRecipe(int amount, Object output, Map<Object, Integer> ingredients);
+	void addConversion(int amount, Object output, Map<Object, Integer> ingredients);
 }

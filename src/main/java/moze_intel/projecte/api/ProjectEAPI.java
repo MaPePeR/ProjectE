@@ -3,7 +3,7 @@ package moze_intel.projecte.api;
 import cpw.mods.fml.common.FMLLog;
 import moze_intel.projecte.api.proxy.IEMCProxy;
 import moze_intel.projecte.api.proxy.IBlacklistProxy;
-import moze_intel.projecte.api.proxy.IRecipeProxy;
+import moze_intel.projecte.api.proxy.IConversionProxy;
 import moze_intel.projecte.api.proxy.ITransmutationProxy;
 
 public final class ProjectEAPI
@@ -11,7 +11,7 @@ public final class ProjectEAPI
 	private static IEMCProxy emcProxy;
 	private static ITransmutationProxy transProxy;
 	private static IBlacklistProxy blacklistProxy;
-	private static IRecipeProxy recipeProxy;
+	private static IConversionProxy recipeProxy;
 
 	private ProjectEAPI() {}
 
@@ -39,14 +39,14 @@ public final class ProjectEAPI
 	 * Retrieves the proxy for EMC-Recipe-Calculation-based API queries.
 	 * @return The proxy for EMC-Recipe-Calculation-based API queries
 	 */
-	public static IRecipeProxy getRecipeProxy()
+	public static IConversionProxy getConversionProxy()
 	{
 		if (recipeProxy == null)
 		{
 			try
 			{
 				Class<?> clazz = Class.forName("moze_intel.projecte.impl.RecipeProxyImpl");
-				recipeProxy = (IRecipeProxy) clazz.getField("instance").get(null);
+				recipeProxy = (IConversionProxy) clazz.getField("instance").get(null);
 			} catch (ReflectiveOperationException ex)
 			{
 				FMLLog.warning("[ProjectEAPI] Error retrieving RecipeProxyImpl, ProjectE may be absent, damaged, or outdated.");

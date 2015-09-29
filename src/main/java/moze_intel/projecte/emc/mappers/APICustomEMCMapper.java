@@ -2,7 +2,7 @@ package moze_intel.projecte.emc.mappers;
 
 import moze_intel.projecte.emc.NormalizedSimpleStack;
 import moze_intel.projecte.emc.collector.IMappingCollector;
-import moze_intel.projecte.impl.RecipeProxyImpl;
+import moze_intel.projecte.impl.ConversionProxyImpl;
 import moze_intel.projecte.utils.PELogger;
 
 import com.google.common.collect.Maps;
@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,7 +48,7 @@ public class APICustomEMCMapper implements IEMCMapper<NormalizedSimpleStack, Int
 	}
 
 	public void registerCustomEMC(Object o, int emcValue) {
-		NormalizedSimpleStack stack = RecipeProxyImpl.instance.objectToNSS(o);
+		NormalizedSimpleStack stack = ConversionProxyImpl.instance.objectToNSS(o);
 		if (stack == null) return;
 		if (emcValue < 0) emcValue = 0;
 		ModContainer activeMod = Loader.instance().activeModContainer();
