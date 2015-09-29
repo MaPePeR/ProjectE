@@ -46,6 +46,12 @@ public class ConversionProxyImpl implements IConversionProxy
 
 	public NormalizedSimpleStack objectToNSS(Object object)
 	{
+		if (object instanceof Block) {
+			return objectToNSS(new ItemStack((Block) object));
+		} else if (object instanceof Item) {
+			return objectToNSS(new ItemStack((Item)object));
+		}
+
 		if (object instanceof ItemStack) {
 			return NormalizedSimpleStack.getFor((ItemStack) object);
 		} else if (object instanceof FluidStack) {

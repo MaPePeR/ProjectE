@@ -3,6 +3,8 @@ package moze_intel.projecte.api.proxy;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 
 import java.util.Map;
 
@@ -18,6 +20,8 @@ public interface IConversionProxy
 	 * You can use the following things for the {@code output}-Parameter and the keys in the {@code ingredients} Map:
 	 * <ul>
 	 *     <li>{@link ItemStack} - The ItemId and Metadata will be used to identify this ItemStack (May contain a {@code Block} or {@code Item})</li>
+	 *     <li>{@link Block} - Same as calling it with {@code new ItemStack(block)}. Uses the Id and metadata = 0</li>
+	 *     <li>{@link Item} - Same as calling it with {@code new ItemStack(item)}. Uses the Id and metadata = 0</li>
 	 *     <li>{@link FluidStack} - {@link FluidStack#getFluid()} and {@link Fluid#getName()} will be used to identify this Fluid.</li>
 	 *     <li>{@link String} - will be interpreted as an OreDictionary name.</li>
 	 *     <li>{@link Object} - (No subclasses of {@code Object} - only {@code Object}!) can be used as a intermediate fake object for complex conversion.</li>
