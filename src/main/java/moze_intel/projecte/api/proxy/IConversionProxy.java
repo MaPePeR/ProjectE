@@ -14,6 +14,8 @@ public interface IConversionProxy
 	 * Add a Conversion to the EMC Calculation.
 	 *
 	 * Adding a Conversion allows ProjectE to calculate the EMC value for the output based on the specified ingredients.
+	 * These do not need to be actually Conversions. You can use it to make the EMC value of an item relative to the EMC value of other items.
+	 * ProjectE will automatically select the Conversion with the lowest EMC value.
 	 *
 	 * Has to be called after {@code FMLInitializationEvent} and before {@code FMLServerStartingEvent}.
 	 *
@@ -41,13 +43,14 @@ public interface IConversionProxy
 	 * addConversion(1, Blocks.furnace, ImmutableMap.<Object, Integer>of(Blocks.cobblestone, 8));
 	 *
 	 * //Bed Crafting Recipe with OreDictionary Names:
+	 * //3 "plankWood" and 3 "blockWool" turn into 1 Blocks.bed
 	 * addConversion(1, Blocks.bed, ImmutableMap.<Object, Integer>of("plankWood", 3, "blockWool", 3));
 	 *
 	 * //For Recipes that have multiple possible Ingredients, that don't belong to a known OreDict entry you can use a fake-item Object:
 	 * Object blackOrWhite = new Object();
-	 * //White Wool
+	 * //1 White Wool can be turned into 1 'blackOrWhite'
 	 * addConversion(1, blackOrWhite, ImmutableMap.of((Object)new ItemStack(Blocks.wool, 1, 0), 1));
-	 * //Black Wool
+	 * //1 Black Wool can be turned into 1 'blackOrWhite'
 	 * addConversion(1, blackOrWhite, ImmutableMap.of((Object)new ItemStack(Blocks.wool, 1, 15), 1));
 	 * //Bed created with black or white wool only
 	 * addConversion(1, Blocks.bed, ImmutableMap.of(blackOrWhite, 3, "plankWood", 3));
