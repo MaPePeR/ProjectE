@@ -19,7 +19,7 @@ public interface IConversionProxy
 	 *
 	 * You can use the following things for the {@code output}-Parameter and the keys in the {@code ingredients} Map:
 	 * <ul>
-	 *     <li>{@link ItemStack} - The ItemId and Metadata will be used to identify this ItemStack (May contain a {@code Block} or {@code Item})</li>
+	 *     <li>{@link ItemStack} - The ItemId and Metadata will be used to identify this ItemStack (May contain a {@code Block} or {@code Item}). You can use {@link net.minecraftforge.oredict.OreDictionary#WILDCARD_VALUE} as metadata.</li>
 	 *     <li>{@link Block} - Same as calling it with {@code new ItemStack(block)}. Uses the Id and metadata = 0</li>
 	 *     <li>{@link Item} - Same as calling it with {@code new ItemStack(item)}. Uses the Id and metadata = 0</li>
 	 *     <li>{@link FluidStack} - {@link FluidStack#getFluid()} and {@link Fluid#getName()} will be used to identify this Fluid.</li>
@@ -31,6 +31,28 @@ public interface IConversionProxy
 	 * Use the {@code amount} parameter to specify how many {@code output}s are created.
 	 * Use the value in the {@code ingredients}-Map to specify how much of an ingredient is required.
 	 * (Use Millibuckets for Fluids)
+	 *
+	 * Examples:
+	 *
+	 * <pre>{@code
+	 * //Furnace Crafting Recipe:
+	 * addConversion(1, Blocks.furnace, ImmutableMap.of((Object)Blocks.cobblestone, 8));
+	 * //alternatively:
+	 * addConversion(1, Blocks.furnace, ImmutableMap.<Object, Integer>of(Blocks.cobblestone, 8));
+	 *
+	 * //Bed Crafting Recipe with OreDictionary Names:
+	 * addConversion(1, Blocks.bed, ImmutableMap.<Object, Integer>of("plankWood", 3, "blockWool", 3));
+	 *
+	 * //For Recipes that have multiple possible Ingredients, that don't belong to a known OreDict entry you can use a fake-item Object:
+	 * Object blackOrWhite = new Object();
+	 * //White Wool
+	 * addConversion(1, blackOrWhite, ImmutableMap.of((Object)new ItemStack(Blocks.wool, 1, 0), 1));
+	 * //Black Wool
+	 * addConversion(1, blackOrWhite, ImmutableMap.of((Object)new ItemStack(Blocks.wool, 1, 15), 1));
+	 * //Bed created with black or white wool only
+	 * addConversion(1, Blocks.bed, ImmutableMap.of(blackOrWhite, 3, "plankWood", 3));
+	 * }
+	 * </pre>
 	 *
 	 * @param amount
 	 * @param output
