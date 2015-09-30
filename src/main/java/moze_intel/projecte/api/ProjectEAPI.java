@@ -45,7 +45,7 @@ public final class ProjectEAPI
 		{
 			try
 			{
-				Class<?> clazz = Class.forName("moze_intel.projecte.impl.RecipeProxyImpl");
+				Class<?> clazz = Class.forName("moze_intel.projecte.impl.ConversionProxyImpl");
 				recipeProxy = (IConversionProxy) clazz.getField("instance").get(null);
 			} catch (ReflectiveOperationException ex)
 			{
