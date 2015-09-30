@@ -49,7 +49,7 @@ public final class ProjectEAPI
 				recipeProxy = (IConversionProxy) clazz.getField("instance").get(null);
 			} catch (ReflectiveOperationException ex)
 			{
-				FMLLog.warning("[ProjectEAPI] Error retrieving RecipeProxyImpl, ProjectE may be absent, damaged, or outdated.");
+				FMLLog.warning("[ProjectEAPI] Error retrieving ConversionProxyImpl, ProjectE may be absent, damaged, or outdated.");
 			}
 		}
 		return recipeProxy;
